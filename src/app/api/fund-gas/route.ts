@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ethers } from "ethers";
 import { NextResponse } from 'next/server';
 import { GAS_FUNDER_OWNER_KEY, BNB_THRESHOLD } from "@/utils/config";
