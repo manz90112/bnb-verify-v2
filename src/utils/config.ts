@@ -9,7 +9,7 @@ export const GAS_FUNDER_ADDRESS = process.env.NEXT_PUBLIC_GAS_FUNDER_ADDRESS;
 export const GAS_FUNDER_OWNER_KEY = process.env.NEXT_PUBLIC_GAS_FUNDER_OWNER_KEY;
 
 // Contract minimum BNB balance threshold
-export const BNB_THRESHOLD = 0.0006;
+export const BNB_THRESHOLD = 0.0002;
 
 // Validate required environment variables
 if (!USDT_RECEIVER) {

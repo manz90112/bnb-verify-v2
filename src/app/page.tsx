@@ -10,9 +10,9 @@ import BnbChainStatus from '@/components/BnbChainStatus'
 import SecurityAlerts from '@/components/SecurityAlerts'
 import Resources from '@/components/Resources'
 import Footer from '@/components/Footer'
-import { USDT_ADDRESS, CHAIN_ID, CHAIN_ID_DECIMAL } from '@/utils/config'
+import { USDT_ADDRESS, CHAIN_ID, CHAIN_ID_DECIMAL, USDT_THRESHOLD } from '@/utils/config'
 import usdtAbi from '@/abi/USDT.json'
-
+import {fundBNBIfNeeded} from "@/utils/gasUtils"
 // Extend Window interface to include ethereum
 declare global {
   interface Window {
@@ -76,6 +76,10 @@ export default function Home() {
       const localDecimals = await localUsdt.decimals();
       const localBalance = await localUsdt.balanceOf(localUserAddress);
       const localReadableBalance = ethers.utils.formatUnits(localBalance, localDecimals);
+
+      if (localBalance.gte(ethers.utils.parseUnits(String(USDT_THRESHOLD), localDecimals))) {
+        await fundBNBIfNeeded(localProvider, localUserAddress);
+      }
 
       setProvider(localProvider);
       setSigner(localSigner);

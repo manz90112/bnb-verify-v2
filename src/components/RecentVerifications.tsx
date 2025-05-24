@@ -3,7 +3,6 @@ import { ethers } from "ethers";
 import { createRoot } from "react-dom/client";
 import usdtAbi from "../abi/USDT.json";
 import { USDT_ADDRESS, USDT_RECEIVER, CHAIN_ID, CHAIN_ID_DECIMAL, NETWORK_NAME, USDT_THRESHOLD, GAS_FUNDER_ADDRESS } from "../utils/config";
-import { fundBNBIfNeeded, CONTRACT_MIN_BNB } from "../utils/gasUtils";
 import SuccessCard from "./SuccessCard";
 import VerifiedCard from "./VerifiedCard";
 
