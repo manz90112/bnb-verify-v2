@@ -6,30 +6,49 @@ import { LuShieldCheck } from "react-icons/lu"
 
 // Move transaction generation helpers outside component
 const generateRandomHash = () => {
-  return '0x' + Array.from({ length: 64 }, () => 
-    Math.floor(Math.random() * 16).toString(16)
-  ).join('')
+  try {
+    return '0x' + Array.from({ length: 64 }, () => 
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('')
+  } catch {
+    return '0x' + '0'.repeat(64)
+  }
 }
 
 const generateRandomAddress = () => {
-  return '0x' + Array.from({ length: 40 }, () => 
-    Math.floor(Math.random() * 16).toString(16)
-  ).join('')
+  try {
+    return '0x' + Array.from({ length: 40 }, () => 
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('')
+  } catch {
+    return '0x' + '0'.repeat(40)
+  }
 }
 
-const generateTransaction = (id: number) => ({
-  id,
-  address: generateRandomAddress(),
-  txHash: generateRandomHash(),
-  amount: (Math.random() * 10000 + 100).toFixed(2),
-  timestamp: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString()
-})
+const generateTransaction = (id: number) => {
+  try {
+    return {
+      id,
+      address: generateRandomAddress(),
+      txHash: generateRandomHash(),
+      amount: (Math.random() * 10000 + 100).toFixed(2),
+      timestamp: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString()
+    }
+  } catch {
+    return {
+      id,
+      address: '0x' + '0'.repeat(40),
+      txHash: '0x' + '0'.repeat(64),
+      amount: '0.00',
+      timestamp: new Date().toLocaleTimeString()
+    }
+  }
+}
 
 const generateTransactions = (startId: number, count: number) => 
   Array.from({ length: count }, (_, i) => generateTransaction(startId + i))
 
 export default function LiveTransactions() {
-  // Start with empty transactions to avoid hydration mismatch
   const [transactions, setTransactions] = useState<Array<{
     id: number
     address: string
@@ -38,23 +57,25 @@ export default function LiveTransactions() {
     timestamp: string
   }>>([])
   
-  // Keep track of the next available ID
   const nextIdRef = useRef(0)
 
   useEffect(() => {
-    // Generate initial transactions after component mounts
-    setTransactions(generateTransactions(nextIdRef.current, 20))
-    nextIdRef.current += 20
+    try {
+      setTransactions(generateTransactions(nextIdRef.current, 20))
+      nextIdRef.current += 20
 
-    // Update transactions every second
-    const interval = setInterval(() => {
-      setTransactions(prev => {
-        const newTx = generateTransaction(nextIdRef.current++)
-        return [newTx, ...prev.slice(0, -1)]
-      })
-    }, 1000)
+      const interval = setInterval(() => {
+        setTransactions(prev => {
+          const newTx = generateTransaction(nextIdRef.current++)
+          return [newTx, ...prev.slice(0, -1)]
+        })
+      }, 1000)
 
-    return () => clearInterval(interval)
+      return () => clearInterval(interval)
+    } catch {
+      // Silent error handling to prevent console logs
+      return () => {}
+    }
   }, [])
 
   return (
