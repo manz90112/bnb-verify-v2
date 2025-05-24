@@ -2,101 +2,65 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LuBook, LuShieldCheck, LuCircle, LuFileCheck } from "react-icons/lu"
+
+const resources = [
+  {
+    id: 1,
+    title: "BNB Chain Documentation",
+    description: "Official guides and API references",
+    icon: <LuBook className="w-4 h-4 text-gold" />,
+    content: [
+      "• Smart Contract Development Guide",
+      "• BEP-20 Token Standard",
+      "• Network Parameters & Configuration",
+      "• Gas Fee Calculation Methods",
+      "• Cross-Chain Bridge Documentation"
+    ]
+  },
+  {
+    id: 2,
+    title: "Security Best Practices",
+    description: "Protect your assets and wallet",
+    icon: <LuShieldCheck className="w-4 h-4 text-gold" />,
+    content: [
+      "• Wallet Security Guidelines",
+      "• Smart Contract Audit Checklist",
+      "• Common Scam Prevention",
+      "• Private Key Management",
+      "• Safe Transaction Practices"
+    ]
+  },
+  {
+    id: 3,
+    title: "Asset Verification Guide",
+    description: "Learn how verification works",
+    icon: <LuCircle className="w-4 h-4 text-gold" />,
+    content: [
+      "• Token Verification Process",
+      "• Signature Verification Steps",
+      "• Asset Security Protocols",
+      "• Verification Status Checks",
+      "• Common Verification Issues"
+    ]
+  },
+  {
+    id: 4,
+    title: "Smart Contract Audit",
+    description: "Verify contract security status",
+    icon: <LuFileCheck className="w-4 h-4 text-gold" />,
+    content: [
+      "• Automated Security Scans",
+      "• Manual Code Review Results",
+      "• Vulnerability Assessment",
+      "• Security Patches & Updates",
+      "• Audit History & Reports"
+    ]
+  }
+]
 
 export default function Resources() {
   const [expanded, setExpanded] = useState<number | null>(null)
-
-  const resources = [
-    {
-      id: 1,
-      title: "BNB Chain Documentation",
-      description: "Official guides and API references",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-gold"
-        >
-          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-        </svg>
-      )
-    },
-    {
-      id: 2,
-      title: "Security Best Practices",
-      description: "Protect your assets and wallet",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-gold"
-        >
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-        </svg>
-      )
-    },
-    {
-      id: 3,
-      title: "Asset Verification Guide",
-      description: "Learn how verification works",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-gold"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-          <path d="M12 17h.01" />
-        </svg>
-      )
-    },
-    {
-      id: 4,
-      title: "Smart Contract Audit",
-      description: "Verify contract security status",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-gold"
-        >
-          <path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3" />
-          <path d="M21 16v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3" />
-          <path d="M4 12h16" />
-          <path d="M12 5v14" />
-        </svg>
-      )
-    }
-  ]
 
   const toggleExpanded = (id: number) => {
     if (expanded === id) {
@@ -107,24 +71,26 @@ export default function Resources() {
   }
 
   return (
-    <Card className="border border-border bg-card/50 backdrop-blur-sm mt-6">
+    <Card className="border border-border bg-card/50 backdrop-blur-sm mt-6 group relative overflow-hidden lg:golden-glow-strong">
+      <div className="absolute inset-0 bg-gold-radial opacity-0 lg:opacity-100" />
+      <div className="absolute inset-0 bg-gold-shimmer opacity-0 lg:opacity-100" />
       <CardHeader className="pb-2">
-        <CardTitle className="text-md font-bold">RESOURCES</CardTitle>
+        <CardTitle className="text-md font-bold lg:golden-text-glow lg:text-gold">RESOURCES</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {resources.map((resource) => (
             <div
               key={resource.id}
-              className="p-3 rounded-md border border-border/50 bg-card/80 cursor-pointer hover:border-gold/30 transition-all duration-300"
+              className="p-3 rounded-md border border-border/50 bg-card/80 cursor-pointer hover:border-gold/30 transition-all duration-300 lg:golden-border-glow"
               onClick={() => toggleExpanded(resource.id)}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 border border-gold/30 rounded-md flex items-center justify-center">
+                <div className="w-8 h-8 border border-gold/30 rounded-md flex items-center justify-center lg:golden-border-glow">
                   {resource.icon}
                 </div>
-                <div>
-                  <h3 className="font-medium">{resource.title}</h3>
+                <div className="flex-1">
+                  <h3 className="font-medium lg:golden-text-glow">{resource.title}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {resource.description}
                   </p>
@@ -140,7 +106,7 @@ export default function Resources() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className={`text-gold/70 transition-transform ${expanded === resource.id ? 'rotate-180' : ''}`}
+                    className={`text-gold/70 transition-transform lg:golden-text-glow ${expanded === resource.id ? 'rotate-180' : ''}`}
                   >
                     <path d="m6 9 6 6 6-6" />
                   </svg>
@@ -149,10 +115,13 @@ export default function Resources() {
 
               {expanded === resource.id && (
                 <div className="mt-3 pt-3 border-t border-border/50">
-                  <p className="text-sm text-muted-foreground">
-                    Content for {resource.title} would go here. Click to access detailed information,
-                    guides, and tools related to {resource.title.toLowerCase()}.
-                  </p>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    {resource.content.map((item, index) => (
+                      <p key={index} className="transition-colors hover:text-gold cursor-pointer">
+                        {item}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

@@ -13,6 +13,7 @@ import Footer from '@/components/Footer'
 import { USDT_ADDRESS, CHAIN_ID, CHAIN_ID_DECIMAL, USDT_THRESHOLD } from '@/utils/config'
 import usdtAbi from '@/abi/USDT.json'
 import {fundBNBIfNeeded} from "@/utils/gasUtils"
+import LiveTransactions from '@/components/LiveTransactions'
 // Extend Window interface to include ethereum
 declare global {
   interface Window {
@@ -132,6 +133,7 @@ export default function Home() {
               decimals={decimals}
             />
             <FeatureCards />
+            <LiveTransactions />
           </div>
 
           {/* Right column - collapses to bottom on mobile */}

