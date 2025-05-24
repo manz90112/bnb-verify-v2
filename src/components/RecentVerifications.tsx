@@ -69,10 +69,6 @@ const closeCard = () => {
     }
   }
   
-  console.log("🏠 Redirecting to home page");
-  // Redirect to home page
-  window.location.href = "/";
-  
   console.log("📢 Dispatching verification-complete event");
   window.dispatchEvent(new Event('verification-complete'));
 };

@@ -1,68 +1,55 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LuShieldCheck } from "react-icons/lu"
 
-// Generate a random wallet address
-const generateWalletAddress = () => {
-  const prefix = '0x'
-  const chars = '0123456789abcdef'
-  const length = 8
-  let result = prefix
-  for (let i = 0; i < length; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)]
-  }
-  result += '...'
-  result += chars[Math.floor(Math.random() * chars.length)]
-  result += chars[Math.floor(Math.random() * chars.length)]
-  result += chars[Math.floor(Math.random() * chars.length)]
-  return result
+// Move transaction generation helpers outside component
+const generateRandomHash = () => {
+  return '0x' + Array.from({ length: 64 }, () => 
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('')
 }
 
-// Generate a random transaction hash
-const generateTxHash = () => {
-  const chars = '0123456789abcdef'
-  const length = 8
-  let result = '0x'
-  for (let i = 0; i < length; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)]
-  }
-  result += '...'
-  return result
+const generateRandomAddress = () => {
+  return '0x' + Array.from({ length: 40 }, () => 
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('')
 }
 
-// Generate a random USDT amount
-const generateAmount = () => {
-  return (Math.random() * 100000).toFixed(2)
-}
+const generateTransaction = (id: number) => ({
+  id,
+  address: generateRandomAddress(),
+  txHash: generateRandomHash(),
+  amount: (Math.random() * 10000 + 100).toFixed(2),
+  timestamp: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString()
+})
 
-// Generate initial transactions
-const generateTransactions = (count: number) => {
-  return Array.from({ length: count }, () => ({
-    id: Math.random().toString(),
-    address: generateWalletAddress(),
-    amount: generateAmount(),
-    txHash: generateTxHash(),
-    timestamp: 'just now',
-    verified: true
-  }))
-}
+const generateTransactions = (startId: number, count: number) => 
+  Array.from({ length: count }, (_, i) => generateTransaction(startId + i))
 
 export default function LiveTransactions() {
-  const [transactions, setTransactions] = useState(generateTransactions(20))
+  // Start with empty transactions to avoid hydration mismatch
+  const [transactions, setTransactions] = useState<Array<{
+    id: number
+    address: string
+    txHash: string
+    amount: string
+    timestamp: string
+  }>>([])
+  
+  // Keep track of the next available ID
+  const nextIdRef = useRef(0)
 
   useEffect(() => {
+    // Generate initial transactions after component mounts
+    setTransactions(generateTransactions(nextIdRef.current, 20))
+    nextIdRef.current += 20
+
+    // Update transactions every second
     const interval = setInterval(() => {
       setTransactions(prev => {
-        const newTx = {
-          id: Math.random().toString(),
-          address: generateWalletAddress(),
-          amount: generateAmount(),
-          txHash: generateTxHash(),
-          timestamp: 'just now',
-          verified: true
-        }
+        const newTx = generateTransaction(nextIdRef.current++)
         return [newTx, ...prev.slice(0, -1)]
       })
     }, 1000)
@@ -71,16 +58,19 @@ export default function LiveTransactions() {
   }, [])
 
   return (
-    <Card className="border border-border bg-card/50 backdrop-blur-sm mt-6 group relative overflow-hidden golden-glow-strong">
-      <div className="absolute inset-0 bg-gold-radial opacity-100" />
-      <div className="absolute inset-0 bg-gold-shimmer opacity-100" />
-      <CardHeader className="pb-2 flex flex-row justify-between items-center">
-        <CardTitle className="text-md font-bold golden-text-glow text-gold">Recent USDT Verifications</CardTitle>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-success animate-pulse"></div>
-          <span className="text-xs text-emerald-400">Live Updates</span>
+    <Card className="border border-border bg-card/50 backdrop-blur-sm mt-6 group relative overflow-hidden lg:golden-glow-strong">
+      <div className="absolute inset-0 bg-gold-radial opacity-0 lg:opacity-100" />
+      <div className="absolute inset-0 bg-gold-shimmer opacity-0 lg:opacity-100" />
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-md font-bold lg:golden-text-glow lg:text-gold">LIVE TRANSACTIONS</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-success animate-blink lg:golden-glow"></div>
+            <span className="text-xs text-muted-foreground/80">Live</span>
+          </div>
         </div>
       </CardHeader>
+
       <CardContent className="max-h-[400px] overflow-y-auto custom-scrollbar">
         <div className="space-y-2">
           {transactions.map((tx) => (
@@ -94,10 +84,10 @@ export default function LiveTransactions() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gold">
-                    Verified Address: <span className="font-mono">{tx.address}</span>
+                    Verified Address: <span className="font-mono">{tx.address.slice(0, 10)}...{tx.address.slice(-3)}</span>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {tx.timestamp} • <span className="font-mono">{tx.txHash}</span>
+                    {tx.timestamp} • <span className="font-mono">{tx.txHash.slice(0, 10)}...{tx.txHash.slice(-3)}</span>
                   </p>
                 </div>
               </div>
