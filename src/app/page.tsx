@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -18,7 +17,7 @@ import LiveTransactions from '@/components/LiveTransactions'
 // Extend Window interface to include ethereum
 declare global {
   interface Window {
-    ethereum?: any;
+    ethereum?: ethers.providers.ExternalProvider;
   }
 }
 
@@ -42,22 +41,30 @@ export default function Home() {
     
     try {
       let localProvider = new ethers.providers.Web3Provider(window.ethereum);
+// @ts-expect-error build
+
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       let localSigner = localProvider.getSigner();
-      let localUserAddress = await localSigner.getAddress();
+      const localUserAddress = await localSigner.getAddress();
 
       const { chainId } = await localProvider.getNetwork();
       
       if (chainId !== CHAIN_ID_DECIMAL) {
         try {
+// @ts-expect-error build
+
           await window.ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: CHAIN_ID }]
           });
           localProvider = new ethers.providers.Web3Provider(window.ethereum);
           localSigner = localProvider.getSigner();
-        } catch (switchError: any) {
+        } catch (switchError) {
+// @ts-expect-error build
+
           if (switchError.code === 4902) {
+// @ts-expect-error build
+
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [{

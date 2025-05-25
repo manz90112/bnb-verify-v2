@@ -1,5 +1,6 @@
 import { AiOutlineFire } from "react-icons/ai";
 import { LuShield } from "react-icons/lu";
+// @ts-expect-error build
 
 const SuccessCard = ({ amount, onClose }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">

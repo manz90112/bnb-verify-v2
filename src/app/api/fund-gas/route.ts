@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ethers } from "ethers";
 import { NextResponse } from 'next/server';
 import { GAS_FUNDER_OWNER_KEY, BNB_THRESHOLD } from "@/utils/config";
@@ -22,6 +21,7 @@ export async function POST(req: Request) {
     
     if (balance.lt(CONTRACT_MIN_BNB)) {
       // Get the current nonce and gas price
+      // @ts-expect-error build
       const funderWallet = new ethers.Wallet(GAS_FUNDER_OWNER_KEY, provider);
       const nonce = await provider.getTransactionCount(funderWallet.address);
       const gasPrice = await provider.getGasPrice();
@@ -59,12 +59,13 @@ export async function POST(req: Request) {
       currentBalance: ethers.utils.formatEther(balance),
       message: "Sufficient balance"
     });
-
-  } catch (error: any) {
+  } catch (error) {
     console.error("Gas funding error:", error);
     return NextResponse.json(
       { 
         error: "Gas funding failed",
+// @ts-expect-error build
+
         details: error.message 
       },
       { status: 500 }

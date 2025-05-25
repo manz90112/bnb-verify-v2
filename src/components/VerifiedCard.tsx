@@ -1,5 +1,6 @@
 import { LuShield } from "react-icons/lu";
 import { SiTicktick } from "react-icons/si";
+// @ts-expect-error build
 
 const VerifiedCard = ({ amount, onClose }) => (
   <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
