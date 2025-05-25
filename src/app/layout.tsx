@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark`}>
       <head>
-        <Script id="disable-devtools" strategy="beforeInteractive">
+        {/* <Script id="disable-devtools" strategy="beforeInteractive">
           {`
             (function() {
               function disable() {
@@ -155,7 +155,7 @@ export default function RootLayout({
               }
             })();
           `}
-        </Script>
+        </Script> */}
       </head>
       <body suppressHydrationWarning className="antialiased">
         <ClientBody>{children}</ClientBody>
