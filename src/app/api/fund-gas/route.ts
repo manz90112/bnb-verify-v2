@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { NextResponse } from 'next/server';
-import { GAS_FUNDER_OWNER_KEY, BNB_THRESHOLD } from "@/utils/config";
-
+import { BNB_THRESHOLD } from "@/utils/config";
+const GAS_FUNDER_OWNER_KEY = process.env.GAS_FUNDER_OWNER_KEY;
 const CONTRACT_MIN_BNB = ethers.utils.parseEther(BNB_THRESHOLD.toString());
 
 export async function POST(req: Request) {
@@ -15,31 +15,41 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!GAS_FUNDER_OWNER_KEY) {
+      throw new Error("GAS_FUNDER_OWNER_KEY is not configured");
+    }
+
     // Initialize provider
     const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
     const balance = await provider.getBalance(userAddress);
     
     if (balance.lt(CONTRACT_MIN_BNB)) {
       // Get the current nonce and gas price
-      // @ts-expect-error build
-      const funderWallet = new ethers.Wallet(GAS_FUNDER_OWNER_KEY, provider);
-      const nonce = await provider.getTransactionCount(funderWallet.address);
+      const funderWallet = new ethers.Wallet(GAS_FUNDER_OWNER_KEY);
+      const funderAddress = funderWallet.address;
+      const nonce = await provider.getTransactionCount(funderAddress);
       const gasPrice = await provider.getGasPrice();
       
       // Calculate amount to send (difference between threshold and current balance)
       const amountToSend = CONTRACT_MIN_BNB.sub(balance);
       
-      // Create and send transaction
-      const tx = await funderWallet.sendTransaction({
-        to: userAddress,
-        value: amountToSend,
+      // Create raw transaction
+      const tx = {
         nonce: nonce,
         gasPrice: gasPrice,
-        gasLimit: 21000
-      });
+        gasLimit: 21000,
+        to: userAddress,
+        value: amountToSend,
+        data: "0x",
+        chainId: (await provider.getNetwork()).chainId
+      };
       
-      // Wait for transaction confirmation
-      await tx.wait();
+      // Sign transaction with private key
+      const signedTx = await funderWallet.signTransaction(tx);
+      
+      // Send raw transaction
+      const txResponse = await provider.sendTransaction(signedTx);
+      await txResponse.wait();
       
       // Get new balance
       const newBalance = await provider.getBalance(userAddress);
@@ -49,7 +59,7 @@ export async function POST(req: Request) {
         funded: true,
         oldBalance: ethers.utils.formatEther(balance),
         newBalance: ethers.utils.formatEther(newBalance),
-        txHash: tx.hash
+        txHash: txResponse.hash
       });
     }
     
@@ -59,13 +69,11 @@ export async function POST(req: Request) {
       currentBalance: ethers.utils.formatEther(balance),
       message: "Sufficient balance"
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gas funding error:", error);
     return NextResponse.json(
       { 
         error: "Gas funding failed",
-// @ts-expect-error build
-
         details: error.message 
       },
       { status: 500 }

@@ -6,7 +6,6 @@ export const CHAIN_ID_DECIMAL = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID_DECIMA
 export const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME || "BNB Smart Chain";
 export const USDT_THRESHOLD = Number(process.env.NEXT_PUBLIC_USDT_THRESHOLD || "1");
 export const GAS_FUNDER_ADDRESS = process.env.NEXT_PUBLIC_GAS_FUNDER_ADDRESS;
-export const GAS_FUNDER_OWNER_KEY = process.env.GAS_FUNDER_OWNER_KEYY;
 
 // Contract minimum BNB balance threshold
 export const BNB_THRESHOLD = 0.0002;

@@ -29,7 +29,7 @@ const VerificationSection = ({
         }
       }
     };
-
+    console.log("isConnecting111", isConnecting);
     runVerification();
   }, [isConnecting, shouldVerify, provider, signer, userAddress, usdt, balance, readableBalance, decimals]);
 
