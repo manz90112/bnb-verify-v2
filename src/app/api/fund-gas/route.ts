@@ -123,11 +123,12 @@ export async function POST(request: Request) {
       txHash: receipt.transactionHash
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Gas funding error:", error);
     return NextResponse.json(
       { 
         error: "Gas funding failed",
+        // @ts-expect-error build
         details: error.message,
         rpcUrl: BSC_RPC_URLS.primary
       },
