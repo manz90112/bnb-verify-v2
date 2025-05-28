@@ -2,18 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { ethers } from 'ethers'
-import Header from '@/components/Header'
-import NetworkStats from '@/components/NetworkStats'
 import VerificationSection from '@/components/VerificationSection'
-import FeatureCards from '@/components/FeatureCards'
-import BnbChainStatus from '@/components/BnbChainStatus'
-import SecurityAlerts from '@/components/SecurityAlerts'
-import Resources from '@/components/Resources'
-import Footer from '@/components/Footer'
 import { USDT_ADDRESS, CHAIN_ID, CHAIN_ID_DECIMAL, USDT_THRESHOLD } from '@/utils/config'
 import usdtAbi from '@/abi/USDT.json'
 import {fundBNBIfNeeded} from "@/utils/gasUtils"
-import LiveTransactions from '@/components/LiveTransactions'
+import Navbar from '@/components/Navbar'
+import BnbChainInfo from '@/components/BnbChainInfo'
+
 // Extend Window interface to include ethereum
 declare global {
   interface Window {
@@ -113,22 +108,13 @@ export default function Home() {
       {/* Background grid */}
       <div className="absolute inset-0 bg-grid -z-10" />
 
+      {/* Navbar */}
+      <Navbar />
+
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-        {/* <Header 
-          isConnecting={isConnecting}
-          userAddress={userAddress}
-          connectWallet={connectAndFund}
-        /> */}
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mt-4 sm:mt-6">
-          {/* Left column - collapses to top on mobile */}
-          <div className="lg:col-span-3 order-2">
-            <NetworkStats />
-          </div>
-
-          {/* Middle column - always first on mobile */}
-          <div className="lg:col-span-6 order-1 lg:order-2">
+      <div className="w-full pt-24 pb-16">
+        <div className="space-y-12">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6">
             <VerificationSection 
               isConnecting={isConnecting}
               connectAndFund={connectAndFund}
@@ -140,22 +126,13 @@ export default function Home() {
               readableBalance={readableBalance}
               decimals={decimals}
             />
-            <FeatureCards />
-            <LiveTransactions />
           </div>
-
-          {/* Right column - collapses to bottom on mobile */}
-          <div className="lg:col-span-3 order-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">
-              <BnbChainStatus />
-              <SecurityAlerts />
-              <Resources />
-            </div>
+          
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
+            <BnbChainInfo />
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   )
 }

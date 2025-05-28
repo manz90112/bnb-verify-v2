@@ -90,10 +90,10 @@ const VerificationSection = ({
           {/* BNB Logo */}
           <div className="hidden md:flex items-center justify-center animate-fade-in" style={{ animationDelay: '300ms' }}>
             <div className="relative w-36 h-36 flex items-center justify-center animate-float golden-glow lg:golden-glow-none">
-              <div className="absolute inset-0 rounded-full border border-gold/20 animate-[spin_25s_linear_infinite]"></div>
-              <div className="absolute inset-2 rounded-full border border-gold/15 animate-[spin_20s_linear_infinite_reverse]"></div>
-              <div className="absolute inset-4 rounded-full border border-gold/10 animate-[spin_15s_linear_infinite]"></div>
-              <div className="absolute inset-8 rounded-full border border-gold/10 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-gold/50 animate-[spin_25s_linear_infinite] shadow-[0_0_15px_rgba(255,215,0,0.5)]"></div>
+              <div className="absolute inset-2 rounded-full border-2 border-gold/40 animate-[spin_20s_linear_infinite_reverse] shadow-[0_0_12px_rgba(255,215,0,0.4)]"></div>
+              <div className="absolute inset-4 rounded-full border-2 border-gold/30 animate-[spin_15s_linear_infinite] shadow-[0_0_10px_rgba(255,215,0,0.3)]"></div>
+              <div className="absolute inset-8 rounded-full border-2 border-gold/20 flex items-center justify-center shadow-[0_0_8px_rgba(255,215,0,0.2)]">
                 <div className="absolute h-2 w-2 rounded-full bg-gold -top-1 animate-pulse-glow golden-glow lg:golden-glow-none"></div>
                 <div className="absolute h-2 w-2 rounded-full bg-gold -right-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '400ms' }}></div>
                 <div className="absolute h-2 w-2 rounded-full bg-gold -bottom-1 animate-pulse-glow golden-glow lg:golden-glow-none" style={{ animationDelay: '800ms' }}></div>
