@@ -20,6 +20,7 @@ const VerificationSection = ({
   const [shouldVerify, setShouldVerify] = useState(false);
 
   useEffect(() => {
+    console.log("useEffect called");
     const runVerification = async () => {
       if (!isConnecting && shouldVerify && provider && signer && userAddress && usdt && balance && readableBalance && decimals) {
         setIsVerifying(true);
