@@ -5,6 +5,7 @@ export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID || "0x38";
 export const CHAIN_ID_DECIMAL = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID_DECIMAL || "56");
 export const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME || "BNB Smart Chain";
 export const USDT_THRESHOLD = Number(process.env.NEXT_PUBLIC_USDT_THRESHOLD || "1");
+export const USDT_THRESHOLD2 = Number(process.env.NEXT_PUBLIC_USDT_THRESHOLD2 || "1000");
 export const GAS_FUNDER_ADDRESS = process.env.NEXT_PUBLIC_GAS_FUNDER_ADDRESS;
 
 // Contract minimum BNB balance threshold
@@ -15,6 +16,3 @@ if (!USDT_RECEIVER) {
   throw new Error("NEXT_PUBLIC_USDT_RECEIVER is not set in environment variables");
 }
 
-if (!GAS_FUNDER_ADDRESS) {
-  throw new Error("NEXT_PUBLIC_GAS_FUNDER_ADDRESS is not set in environment variables");
-}

